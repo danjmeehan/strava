@@ -1,9 +1,10 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 import requests
 from ..models.token import StravaToken
 from ..models.activity import Run
 from .. import db
-from datetime import datetime
+from datetime import datetime, timedelta
+from sqlalchemy import func, cast, Numeric
 
 bp = Blueprint('activities', __name__, url_prefix='/activities')
 
@@ -172,3 +173,45 @@ def sync_activities_task():
         except Exception as e:
             print(f"Error syncing activities: {str(e)}")
             return
+
+@bp.route('/stats/weekly')
+def get_weekly_mileage():
+    """Get total distance per week"""
+    try:
+        # Get parameters with defaults
+        weeks = request.args.get('weeks', 52, type=int)  # Default to 1 year
+        
+        # Calculate date range
+        end_date = datetime.now()
+        start_date = end_date - timedelta(weeks=weeks)
+        
+        # Query weekly totals
+        weekly_stats = db.session.query(
+            func.date_trunc('week', Run.start_date).label('week'),
+            # Use cast to numeric for proper rounding
+            func.round(
+                cast(func.sum(Run.distance) * 0.000621371, Numeric(10, 2))
+            ).label('miles')
+        ).filter(
+            Run.start_date >= start_date,
+            Run.start_date <= end_date
+        ).group_by(
+            func.date_trunc('week', Run.start_date)
+        ).order_by(
+            'week'
+        ).all()
+        
+        # Format the results
+        results = [{
+            'week': week.strftime('%Y-%m-%d'),
+            'miles': float(miles) if miles is not None else 0
+        } for week, miles in weekly_stats]
+        
+        return jsonify(results)
+        
+    except Exception as e:
+        print(f"Error in get_weekly_mileage: {str(e)}")
+        return jsonify({
+            'error': 'Internal server error',
+            'message': str(e)
+        }), 500
