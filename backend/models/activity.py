@@ -23,3 +23,4 @@ class Run(db.Model):
     end_longitude = db.Column(db.Float)
     average_temp = db.Column(db.Float)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    comments = db.Column(db.Text)

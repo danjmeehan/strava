@@ -2,6 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from .extensions import db
 from .routes.activities import bp as activities_bp
+from flask_migrate import Migrate
 
 def create_app():
     app = Flask(__name__)
@@ -19,6 +20,7 @@ def create_app():
     
     # Initialize extensions
     db.init_app(app)
+    migrate = Migrate(app, db)
     
     # Register blueprints
     app.register_blueprint(activities_bp)
