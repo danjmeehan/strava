@@ -251,7 +251,8 @@ def get_runs():
             'id': run.id,
             'start_date': run.start_date.isoformat(),
             'distance': run.distance,  # in meters
-            'avg_pace': format_pace(run.average_speed)  # using existing format_pace function
+            'avg_pace': format_pace(run.average_speed),  # using existing format_pace function
+            'comments': run.comments  # Add this line
         } for run in runs])
         
     except Exception as e:

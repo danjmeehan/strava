@@ -39,6 +39,7 @@ function RunsTable() {
             <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #ddd' }}>Date</th>
             <th style={{ padding: '12px', textAlign: 'right', borderBottom: '2px solid #ddd' }}>Miles</th>
             <th style={{ padding: '12px', textAlign: 'right', borderBottom: '2px solid #ddd' }}>Average Pace</th>
+            <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #ddd' }}>Comments</th>
           </tr>
         </thead>
         <tbody>
@@ -52,6 +53,9 @@ function RunsTable() {
               </td>
               <td style={{ padding: '12px', textAlign: 'right' }}>
                 {run.avg_pace}
+              </td>
+              <td style={{ padding: '12px' }}>
+                {run.comments || 'No comments'}
               </td>
             </tr>
           ))}
