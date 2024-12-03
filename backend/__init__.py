@@ -1,11 +1,12 @@
 from flask import Flask
 from flask_cors import CORS
-from .extensions import db, migrate, cors
-from .config import Config
+from .extensions import db
 from .routes.activities import bp as activities_bp
 
 def create_app():
     app = Flask(__name__)
+    
+    # Simpler CORS configuration - allow all origins for now
     CORS(app)
     
     # Database configuration
