@@ -6,14 +6,20 @@ scheduler = BackgroundScheduler()
 def init_scheduler(app):
     def wrapped_task():
         with app.app_context():
-            sync_activities_task()
+            try:
+                sync_activities_task()
+            except Exception as e:
+                print(f"Scheduler error: {str(e)}")
 
     scheduler.add_job(
         func=wrapped_task,
         trigger='interval',
-        minutes=1,  # For testing
+        hours=12,
         id='sync_strava',
         max_instances=1
     )
     
-    scheduler.start()
+    try:
+        scheduler.start()
+    except Exception as e:
+        print(f"Error starting scheduler: {str(e)}")
